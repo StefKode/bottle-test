@@ -1,0 +1,51 @@
+<head>
+	<style> body { margin: 0px; padding: 0px; } </style>
+</head>
+<body bgcolor="#000000">
+	<canvas id="myCanvas" width="400" height="400"></canvas>
+	<script>
+		var source   = new EventSource('/events');
+		var canvas   = document.getElementById('myCanvas');
+		var context  = canvas.getContext('2d');
+		var imageObj = new Image();
+		var uplong   = 120;
+		var dnlong   = 100;
+		var arroww   = 20;
+		var step     = 0
+
+		function draw_arrow() {
+			var rad = (step * 2) * Math.PI / 180;
+			context.drawImage(imageObj, 1, 1, canvas.width, canvas.height);
+			// Filled triangle
+			context.translate(canvas.width / 2, canvas.height / 2);
+			context.rotate(rad);
+			context.beginPath();
+			context.moveTo(0, -uplong);
+			context.lineTo(-arroww, -10);
+			context.lineTo(-(arroww/3), -10);
+			context.lineTo(-(arroww/3), dnlong);
+			context.lineTo( (arroww/3), dnlong);
+			context.lineTo( (arroww/3), -10);
+			context.lineTo( arroww, -10);
+			context.fillStyle = '#00ff00';
+			context.fill();
+			//reset the canvas  
+			context.rotate(rad * ( -1 ) );
+			context.translate(canvas.width / -2, canvas.height / -2);
+		}
+
+		source.onmessage = function(e) {
+			//document.getElementById("bla").innerHTML = e.data;
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			step = e.data;
+			draw_arrow();
+		};
+
+		imageObj.src = '/pages/compass_rose.jpg';
+		context.drawImage(imageObj, 1, 1, canvas.width, canvas.height);
+		imageObj.onload = draw_ui();
+		draw_arrow();
+	</script>
+	<h1 id="bla">Hallo</h1>
+</body>
+</html>      
